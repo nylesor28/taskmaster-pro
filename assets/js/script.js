@@ -45,16 +45,17 @@ var saveTasks = function () {
 };
 
 var auditTask = function(taskEl) {
+
   //get date from task element
   var date = $(taskEl).find("span").text().trim();
 
   //ensure it worked
-  console.log(date);
+
 
   //convert the moment object at 5pm
   var time = moment(date, "L").set("hour", 17);
   //this should print out an object for the value of the date variable but at 5 pm of that date
-  console.log(time)
+
 
   //remove any old classes from element
   $(taskEl).removeClass("list-group-item-warning list-group-item-danger")
@@ -250,5 +251,13 @@ $("#remove-tasks").on("click", function () {
   saveTasks();
 });
 
+
+
 // load tasks for the first time
 loadTasks();
+
+setInterval(function () {
+  $(".card .list-group-item").each(function(index, el) {
+    auditTask(el);
+  });
+}, (1000*60)*30);
