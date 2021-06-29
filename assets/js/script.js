@@ -49,9 +49,6 @@ var auditTask = function(taskEl) {
   //get date from task element
   var date = $(taskEl).find("span").text().trim();
 
-  //ensure it worked
-
-
   //convert the moment object at 5pm
   var time = moment(date, "L").set("hour", 17);
   //this should print out an object for the value of the date variable but at 5 pm of that date
@@ -154,16 +151,21 @@ $(".card .list-group").sortable({
   scroll: false,
   tolerance: "pointer",
   helper: "clone",
-  activate: function (event) {
-    console.log("activate", this);
+  activate: function (event,ui) {
+    $(this).addClass("dropover")
+    $(".bottom-trash").addClass("bottom-trash-drag");
   },
-  deactivate: function (event) {
-    console.log("deactivate", this);
+  deactivate: function (event,ui) {
+    $(this).removeClass("dropover");
+    $(".bottom-trash").removeClass("bottom-trash-drag");
   },
-  out: function (event) {
-    console.log("out", this);
+  over: function(event) {
+    $(event.target).addClass("dropover-active");
   },
-  update: function (event) {
+  out: function(event) {
+    $(event.target).removeClass("dropover-active");
+  },
+  update: function () {
     // array to store the task data in
     var tempArr = [];
     // loop over current set of children in sortable list
@@ -174,7 +176,6 @@ $(".card .list-group").sortable({
 
         var date = $(this).find("span").text().trim();
 
-        console.log(text, date);
         // add task data to the temp array as an object
         tempArr.push({
           text: text,
@@ -195,13 +196,16 @@ $("#trash").droppable({
   accept: ".card .list-group-item",
   tolerance: "touch",
   drop: function(event, ui) {
+    // remove dragged element from the dom
     ui.draggable.remove();
+    $(".bottom-trash").removeClass("bottom-trash-active");
   },
   over: function(event, ui) {
-    console.log("over");
+    console.log(ui);
+    $(".bottom-trash").addClass("bottom-trash-active");
   },
   out: function(event, ui) {
-    console.log("out");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
 });
 // modal was triggered
@@ -221,7 +225,7 @@ $("#task-form-modal").on("shown.bs.modal", function () {
 });
 
 // save button in modal was clicked
-$("#task-form-modal .btn-primary").click(function () {
+$("#task-form-modal .btn-save").click(function () {
   // get form values
   var taskText = $("#modalTaskDescription").val();
   var taskDate = $("#modalDueDate").val();
